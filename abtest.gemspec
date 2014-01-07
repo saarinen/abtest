@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Abtest::VERSION
   spec.authors       = ["Steve Saarinen"]
   spec.email         = ["ssaarinen@whitepages.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Railtie base to enable engine baset AB test modules}
+  spec.summary       = %q{Manages registered AB test engines and provides before_filter to dynamically add load paths for enabled tests}
+  spec.homepage      = "http://www.whitepages.com"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
