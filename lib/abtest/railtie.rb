@@ -7,10 +7,9 @@ module Abtest
       config.abtest.registered_tests = Set.new
     end
 
-    initializer "abtest.set_filter", :after => 'bootstrap_hook' do
-      ActionController::Base.class_eval do
-        include Abtest
-        append_before_filter Abtest::Processor.process_tests
+    initializer "abtest.set_filter" do
+      ActiveSupport.on_load(:action_controller) do
+        ActionController::Base.send(:include, Abtest::Filters)
       end
     end
   end
