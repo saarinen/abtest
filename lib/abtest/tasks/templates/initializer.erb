@@ -1,0 +1,9 @@
+<%= name %>_test = lambda { |request| 
+  false 
+}
+
+<%= name %>_process = lambda { |controller| 
+   
+}
+
+Abtest.register_test("<%= experiment_path %>", <%= name %>_test, <%= name %>_process)
