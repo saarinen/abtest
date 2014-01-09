@@ -4,12 +4,22 @@ namespace :abtest do
     name = args[:name]
     puts "Experiment name is required" and return if name.nil?
 
-    # Check to see if we have a tests directory
-    Dir.mkdir("#{Rails.root}/app/views/tests") unless Dir.exists?("#{Rails.root}/app/views/tests")
+    # Check to see if we have a experiments directory
+    FileUtils.mkdir_p("#{Rails.root}/experiments")
 
-    # Create a folder for this experiment
-    experiment_path = "#{Rails.root}/app/views/tests/#{args[:name]}"
-    Dir.mkdir(experiment_path) unless Dir.exists?(experiment_path)
+    # Add directories for views and assets
+    experiment_path       = "#{Rails.root}/experiments/#{args[:name]}"
+    application_css_path  = "#{experiment_path}/assets/stylesheets"
+    view_path             = "#{experiment_path}/views"
+    FileUtils.mkdir_p(view_path)
+    FileUtils.mkdir_p(application_css_path)
+
+    # Add template stylesheet
+    css_template = File.read("#{File.dirname(__FILE__)}/templates/application.scss.erb")
+    renderer = ERB.new(css_template)
+    css_result = renderer.result(binding)
+
+    File.open("#{application_css_path}/#{name}_application.scss", 'w') {|f| f.write(css_result) }
 
     # Create a new initializer file if it doesn't exist already
     initializer_path = "#{Rails.root}/config/initializers/abtest.rb"
@@ -28,11 +38,11 @@ namespace :abtest do
 
   desc "Delete all experiments"
   task :delete_experiments => :environment do
-    # Remove tests directory
-    FileUtils.rm_rf("#{Rails.root}/app/views/tests") if Dir.exists?("#{Rails.root}/app/views/tests")
+    # Remove experiments directory
+    FileUtils.rm_rf("#{Rails.root}/experiments")
 
     # Remove initializer
-    FileUtils.rm("#{Rails.root}/config/initializers/abtest.rb") if Dir.exists?("#{Rails.root}/config/initializers/abtest.rb")
+    FileUtils.rm_f("#{Rails.root}/config/initializers/abtest.rb")
 
     puts "All tests removed"
   end
