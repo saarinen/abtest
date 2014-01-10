@@ -14,7 +14,7 @@
 }
 
 Abtest.register_test("<%= view_path %>", <%= name %>_test, <%= name %>_process)
-Rails.application.config.assets.paths << "<%= experiment_path %>/assets/"
+Rails.application.config.assets.paths += ["<%= application_css_path %>", "<%= image_path %>"]
 
 ################################################
 #

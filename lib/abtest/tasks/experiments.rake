@@ -49,10 +49,13 @@ namespace :abtest do
     name = args[:name]
     puts "Experiment name is required" and return if name.nil?
 
+    Rake::Task['assets:precompile'].invoke
+
     experiment_path       = "#{Rails.root}/experiments/#{name}"
     application_css_path  = "#{experiment_path}/assets/#{name}/stylesheets"
+    images_path           = "#{experiment_path}/assets/#{name}/images"
 
-    Rails.application.config.assets.paths = ["#{experiment_path}/assets/"] + Rails.application.config.assets.paths
+    Rails.application.config.assets.paths = ["#{application_css_path}", "#{images_path}"] + Rails.application.config.assets.paths
     Rails.application.config.assets.precompile += ["#{application_css_path}/application.scss"]
     
     Rake::Task['assets:precompile'].invoke
