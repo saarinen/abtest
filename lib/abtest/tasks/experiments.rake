@@ -8,7 +8,7 @@ namespace :abtest do
     FileUtils.mkdir_p("#{Rails.root}/experiments")
 
     # Add directories for views and assets
-    experiment_path       = "#{Rails.root}/experiments/#{args[:name]}"
+    experiment_path       = "#{Rails.root}/experiments/#{name}"
     application_css_path  = "#{experiment_path}/assets/#{name}/stylesheets"
     image_path            = "#{experiment_path}/assets/#{name}/images"
     view_path             = "#{experiment_path}/views"
@@ -42,6 +42,20 @@ namespace :abtest do
     File.open(initializer_path, 'a') { |f| f.write(result) }
 
     puts "Please edit #{initializer_path} to configure experiment."
+  end
+
+  desc "Precompile assets for a specific experiment"
+  task :assets_precompile, [:name] => :environment do |t, args| 
+    name = args[:name]
+    puts "Experiment name is required" and return if name.nil?
+
+    experiment_path       = "#{Rails.root}/experiments/#{name}"
+    application_css_path  = "#{experiment_path}/assets/#{name}/stylesheets"
+
+    Rails.application.config.assets.paths = ["#{experiment_path}/assets/"] + Rails.application.config.assets.paths
+    Rails.application.config.assets.precompile += ["#{application_css_path}/application.scss"]
+    
+    Rake::Task['assets:precompile'].invoke
   end
 
   desc "Delete all experiments"
