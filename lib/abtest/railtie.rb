@@ -2,6 +2,11 @@ require 'rails'
 
 module Abtest
   class Railtie < ::Rails::Railtie
+    rake_tasks do |app|
+      require 'abtest/asset_task'
+      Abtest::AssetTask.new(app)
+    end
+
     rake_tasks do
       Dir[File.join(File.dirname(__FILE__),'tasks/*.rake')].each { |f| load f }
     end

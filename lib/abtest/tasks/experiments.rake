@@ -25,13 +25,7 @@ namespace :abtest do
 
     # Create a new initializer file if it doesn't exist already
     initializer_path = "#{Rails.root}/config/initializers/abtest.rb"
-    unless File.exists?(initializer_path)
-      initializer_template = File.read("#{File.dirname(__FILE__)}/templates/precompile_config.erb")
-      renderer = ERB.new(initializer_template)
-      result = renderer.result(binding)
-
-      File.open(initializer_path, 'a') { |f| f.write(result) }
-    end
+    FileUtils.touch(initializer_path)
 
     # Add template initializer
     template = File.read("#{File.dirname(__FILE__)}/templates/initializer.erb")
@@ -42,36 +36,6 @@ namespace :abtest do
     File.open(initializer_path, 'a') { |f| f.write(result) }
 
     puts "Please edit #{initializer_path} to configure experiment."
-  end
-
-  desc "Precompile assets for a specific experiment"
-  task :assets_precompile, [:name] => :environment do |t, args| 
-    name = args[:name]
-    puts "Experiment name is required" and return if name.nil?
-
-
-    experiment_path       = "#{Rails.root}/experiments/#{name}"
-    application_css_path  = "#{experiment_path}/assets/#{name}/stylesheets"
-    images_path           = "#{experiment_path}/assets/#{name}/images"
-
-    Rails.application.config.assets.paths = ["#{application_css_path}", "#{images_path}"] + Rails.application.config.assets.paths
-    Rails.application.config.assets.precompile += ["#{application_css_path}/application.scss"]
-
-    Rails.application.config.assets.precompile = [Proc.new do |path|
-      unless path =~ /\.(css|js)\z/
-        full_path = Rails.application.assets.resolve(path).to_path
-        app_assets_path = "<%= experiment_path %>/assets/"
-        if full_path.starts_with? app_assets_path
-          true
-        else
-          false
-        end
-      else
-        false
-      end
-    end, 'application.css']
-    
-    Rake::Task['assets:precompile'].invoke
   end
 
   desc "Delete all experiments"
