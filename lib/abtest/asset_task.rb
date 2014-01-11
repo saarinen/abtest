@@ -51,7 +51,7 @@ module Abtest
           puts "Experiment name is required" and return if name.nil?
 
           with_logger do
-            manifest.clean(false)
+            manifest.clean(keep)
           end
 
           experiment_path       = "#{Rails.root}/experiments/#{name}"
@@ -62,7 +62,7 @@ module Abtest
           app.config.assets.digest = true
           app.config.assets.compile = true
 
-          assets = [Proc.new do |path|
+          assets += [Proc.new do |path|
             unless path =~ /\.(css|js)\z/
               full_path = app.assets.resolve(path).to_path
               app_assets_path = "#{experiment_path}/assets/"
