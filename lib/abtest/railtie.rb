@@ -12,8 +12,9 @@ module Abtest
     end
   
     initializer "abtest.set_config", :after => 'bootstrap_hook' do
-      config.abtest = ActiveSupport::OrderedOptions.new
-      config.abtest.registered_tests = Set.new
+      config.abtest                   = ActiveSupport::OrderedOptions.new
+      config.abtest.registered_tests  = Set.new
+      config.abtest.precompile_assets = Array.new
     end
 
     initializer "abtest.set_filter" do

@@ -26,14 +26,6 @@ module Abtest
       end
     end
 
-    def assets
-      if app
-        app.config.assets.precompile
-      else
-        super
-      end
-    end
-
     def cache_path
       if app
         "#{app.config.root}/tmp/cache/assets"
@@ -62,7 +54,7 @@ module Abtest
           app.config.assets.digest = true
           app.config.assets.compile = true
 
-          assets += [Proc.new do |path|
+          assets = [Proc.new do |path|
             unless path =~ /\.(css|js)\z/
               full_path = app.assets.resolve(path).to_path
               app_assets_path = "#{experiment_path}/assets/"
