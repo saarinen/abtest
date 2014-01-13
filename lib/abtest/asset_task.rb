@@ -20,30 +20,27 @@ module Abtest
           configured_experiments.each do |experiment|
             name = experiment[:name]
 
-            # Reset cache
-            with_logger do
-              manifest.clean(keep)
-            end
-
             experiment_path       = File.join(app.root, 'abtest', 'experiments', name)
             application_css_path  = File.join(experiment_path, app.config.assets.prefix, 'stylesheets')
             images_path           = File.join(experiment_path, app.config.assets.prefix, 'images')
             javascript_path       = File.join(experiment_path, app.config.assets.prefix, 'javascript')
 
             # Always calculate digests and compile files
-            app.config.assets.digest = true
+            app.config.assets.digest  = true
             app.config.assets.compile = true
+            environment.cache         = :null_store  # Disables the Asset cache
 
             environment.prepend_path("#{application_css_path}")
             environment.prepend_path("#{images_path}")
             environment.prepend_path("#{javascript_path}")
 
+            # Set view cotext for asset path
+            environment.context_class.assets_prefix = File.join(app.config.assets.prefix, 'experiments', name)
+
             output_file = File.join(app.root, 'public', app.config.assets.prefix, 'experiments', name)
+            app.config.assets.prefix = "/experiments/single_colunm/assets"
 
             manifest = Sprockets::Manifest.new(environment, output_file)
-
-            # Set view cotext for asset path
-            app.assets.context_class.assets_prefix = File.join(app.config.assets.prefix, 'experiments', name)
 
             with_logger do
               manifest.compile(assets)

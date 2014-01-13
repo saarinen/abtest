@@ -36,7 +36,7 @@ module Abtest
         unless experiment_activated
           # Set view cotext for asset path
           environment.context_class.assets_prefix = app_config.assets.prefix
-          ActionView::Base.assets_prefix  = File.join(app_config.assets.prefix, 'experiments', test_hash[:name])
+          ActionView::Base.assets_prefix  = File.join(app_config.assets.prefix)
 
           manifest_path                   = File.join(Rails.root, 'public', app_config.assets.prefix)
           unless ActionView::Base.assets_manifest.dir == manifest_path

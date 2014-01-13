@@ -4,9 +4,6 @@ namespace :abtest do
     name = args[:name]
     puts "Experiment name is required" and return if name.nil?
 
-    # Check to see if we have a experiments directory
-    FileUtils.mkdir_p("#{Rails.root}/experiments")
-
     # Add directories for views and assets
     app_config            = Rails.application.config
     test_root             = File.join(Rails.root, 'abtest')
