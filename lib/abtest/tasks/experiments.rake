@@ -8,24 +8,27 @@ namespace :abtest do
     FileUtils.mkdir_p("#{Rails.root}/experiments")
 
     # Add directories for views and assets
-    experiment_path       = "#{Rails.root}/experiments/#{name}"
-    application_css_path  = "#{experiment_path}/assets/#{name}/stylesheets"
-    image_path            = "#{experiment_path}/assets/#{name}/images"
-    view_path             = "#{experiment_path}/views"
+    app_config            = Rails.application.config
+    test_root             = File.join(Rails.root, 'abtest')
+    experiment_path       = File.join(test_root, 'experiments', name)
+    application_css_path  = File.join(experiment_path, app_config.assets.prefix, 'stylesheets')
+    images_path           = File.join(experiment_path, app_config.assets.prefix, 'images')
+    javascript_path       = File.join(experiment_path, app_config.assets.prefix, 'javascript')
+    view_path             = File.join(experiment_path, 'views')
+
     FileUtils.mkdir_p(view_path)
     FileUtils.mkdir_p(application_css_path)
-    FileUtils.mkdir_p(image_path)
-
-    # Add template stylesheet
-    css_template = File.read("#{File.dirname(__FILE__)}/templates/application.scss.erb")
-    renderer = ERB.new(css_template)
-    css_result = renderer.result(binding)
-
-    File.open("#{application_css_path}/application.scss", 'w') {|f| f.write(css_result) }
+    FileUtils.mkdir_p(images_path)
+    FileUtils.mkdir_p(javascript_path)
 
     # Create a new initializer file if it doesn't exist already
     initializer_path = "#{Rails.root}/config/initializers/abtest.rb"
-    FileUtils.touch(initializer_path)
+    unless File.exists?(initializer_path)
+      ab_template = File.read("#{File.dirname(__FILE__)}/templates/abtest.erb")
+      renderer    = ERB.new(ab_template)
+      result      = renderer.result(binding)
+      File.open(initializer_path, 'w') {|f| f.write(result) }
+    end
 
     # Add template initializer
     template = File.read("#{File.dirname(__FILE__)}/templates/initializer.erb")

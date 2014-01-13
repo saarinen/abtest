@@ -13,8 +13,7 @@
    
 }
 
-Abtest.register_test("<%= view_path %>", <%= name %>_test, <%= name %>_process)
-Rails.application.config.assets.paths += ["<%= application_css_path %>", "<%= image_path %>"]
+Abtest.register_test("<%= name %>", <%= name %>_test, <%= name %>_process)
 
 # Add additional files to precompile here
 Rails.application.config.abtest.precompile_assets = []
