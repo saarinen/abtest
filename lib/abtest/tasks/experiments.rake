@@ -44,7 +44,7 @@ namespace :abtest do
   desc "Delete all experiments"
   task :delete_experiments => :environment do
     # Remove experiments directory
-    FileUtils.rm_rf("#{Rails.root}/experiments")
+    FileUtils.rm_rf("#{Rails.root}/abtest")
 
     # Remove initializer
     FileUtils.rm_f("#{Rails.root}/config/initializers/abtest.rb")
