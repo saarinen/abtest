@@ -28,7 +28,9 @@ module Abtest
             # Always calculate digests and compile files
             app.config.assets.digest  = true
             app.config.assets.compile = true
-            environment.cache         = :null_store  # Disables the Asset cache
+
+            environment       = app.assets
+            environment.cache = :null_store  # Disables the Asset cache
 
             environment.prepend_path("#{application_css_path}")
             environment.prepend_path("#{images_path}")
