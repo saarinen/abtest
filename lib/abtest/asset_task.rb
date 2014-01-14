@@ -29,7 +29,6 @@ module Abtest
             experiment_environment = Sprockets::Environment.new(Rails.root.to_s) do |env|
               env.context_class.class_eval do
                 include ::Sprockets::Rails::Helper
-                assets_prefix = File.join('experiments', name)
               end
             end
 
@@ -47,8 +46,13 @@ module Abtest
               experiment_environment.append_path path
             end
 
-            output_file = File.join(app.root, 'public', app.config.assets.prefix, 'experiments', name)
-            app.config.assets.prefix = "/experiments/single_colunm/assets"
+            experiment_environment.js_compressor  = app.config.assets.js_compressor
+            experiment_environment.css_compressor = app.config.assets.css_compressor
+
+            output_file                                         = File.join(app.root, 'public', app.config.assets.prefix, 'experiments', name)
+            experiment_environment.context_class.assets_prefix  = "/#{app.config.assets.prefix}/experiments/#{name}"
+            experiment_environment.context_class.digest_assets  = app.config.assets.digest
+            experiment_environment.context_class.config         = app.config.action_controller
 
             manifest = Sprockets::Manifest.new(experiment_environment, output_file)
 
