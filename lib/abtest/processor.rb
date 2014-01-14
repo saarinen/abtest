@@ -25,7 +25,7 @@ module Abtest
           end
 
           # Prepend the lookup paths for our views
-          controller.prepend_view_path(File.join(Rails.root, 'experiments', test_hash[:name], 'views'))
+          controller.prepend_view_path(File.join(experiment_path, 'views'))
 
           test_hash[:process].call(controller) unless test_hash[:process].nil?
 
