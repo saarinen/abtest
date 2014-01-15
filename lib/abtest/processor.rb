@@ -20,19 +20,10 @@ module Abtest
           environment.context_class.assets_prefix = File.join(app_config.assets.prefix, 'experiments', test_hash[:name])
           ActionView::Base.assets_prefix = File.join(app_config.assets.prefix, 'experiments', test_hash[:name])
 
-          # Swap out our manifest file
-          manifest_path       = File.join(Rails.root, 'public', app_config.assets.prefix, 'experiments', test_hash[:name])
-          if app_config.assets.compile
-            ActionView::Base.assets_manifest = Sprockets::Manifest.new(environment, manifest_path)
-          else
-            ActionView::Base.assets_manifest = Sprockets::Manifest.new(manifest_path)
-          end
+          manifest = Abtest::ManifestManager.instance.retrieve_manifest(test_hash[:name])
 
-          # Add asset paths
-          environment.prepend_path("#{application_css_path}")
-          environment.prepend_path("#{images_path}")
-          environment.prepend_path("#{javascript_path}")
-          environment.index
+          ActionView::Base.assets_environment = manifest.environment
+          ActionView::Base.assets_manifest    = manifest
 
           # Prepend the lookup paths for our views
           controller.prepend_view_path(File.join(experiment_path, 'views'))
@@ -40,36 +31,19 @@ module Abtest
           test_hash[:process].call(controller) unless test_hash[:process].nil?
 
           experiment_activated = true
+        elsif (!experiment_activated)
+          environment.context_class.assets_prefix = File.join(app_config.assets.prefix)
+          ActionView::Base.assets_prefix = File.join(app_config.assets.prefix)
+
+          manifest_path = File.join(Rails.root, 'public', app_config.assets.prefix)
+
+          if app_config.assets.compile
+            ActionView::Base.assets_environment = environment
+            ActionView::Base.assets_manifest    = Sprockets::Manifest.new(environment, manifest_path)
+          else
+            ActionView::Base.assets_manifest = Sprockets::Manifest.new(manifest_path)
+          end
         end
-      end
-    end
-
-    def self.cleanup_tests controller
-      app_config            = Rails.application.config
-      environment           = Rails.application.assets
-
-      # Set view context for asset path
-      environment.context_class.assets_prefix = app_config.assets.prefix
-      ActionView::Base.assets_prefix  = File.join(app_config.assets.prefix)
-      manifest_path                   = File.join(Rails.root, 'public', app_config.assets.prefix)
-
-      unless ActionView::Base.assets_manifest.dir == manifest_path
-        if app_config.assets.compile
-          ActionView::Base.assets_manifest = Sprockets::Manifest.new(environment, manifest_path)
-        else
-          ActionView::Base.assets_manifest = Sprockets::Manifest.new(manifest_path)
-        end
-      end
-
-      Abtest.abtest_config.registered_tests.each do |test_hash|
-        experiment_path      = File.join(Rails.root, 'abtest', 'experiments', test_hash[:name])
-
-        core_paths = environment.paths.dup.reject { |path| path.starts_with?(experiment_path) }
-        environment.clear_paths
-        core_paths.each do |path|
-          environment.append_path path
-        end
-        environment.index
       end
     end
   end
