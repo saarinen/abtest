@@ -18,9 +18,11 @@ module Abtest
 
           # Precompile assets for each experiment
           configured_experiments.each do |experiment|
-            name = experiment[:name]
+            name      = experiment[:name]
+            manifest  = Abtest::ManifestManager.instance.retrieve_manifest(name)
 
-            manifest = Abtest::ManifestManager.instance.retrieve_manifest(name)
+            # Add our experiments asset path
+            assets << lambda {|filename, path| path =~ /#{name}\/assets/ && !%w(.js .css).include?(File.extname(filename))}
 
             with_logger do
               manifest.compile(assets)
