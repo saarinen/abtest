@@ -1,5 +1,4 @@
 require 'sprockets/rails'
-require 'byebug'
 
 module Abtest
   class AssetTask < Sprockets::Rails::Task
