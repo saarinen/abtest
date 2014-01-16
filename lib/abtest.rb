@@ -50,6 +50,13 @@ module Abtest
       experiment_environment.js_compressor  = app.config.assets.js_compressor
       experiment_environment.css_compressor = app.config.assets.css_compressor
 
+      if app.config.logger
+        experiment_environment.logger = app.config.logger
+      else
+        experiment_environment.logger       = Logger.new($stdout)
+        experiment_environment.logger.level = Logger::INFO
+      end
+
       output_file                                         = File.join(app.root, 'public', app.config.assets.prefix, 'experiments', name)
       experiment_environment.context_class.assets_prefix  = "#{app.config.assets.prefix}/experiments/#{name}"
       experiment_environment.context_class.digest_assets  = app.config.assets.digest
