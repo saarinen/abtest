@@ -24,7 +24,7 @@ Or install it yourself as:
 
 Once the gem is installed in your Rails application, rou can run the following command to set up an experiment:
 
-    $ bundle exec rake abtest:add_experiment
+    $ bundle exec rake abtest:add_experiment[experiment_name]
 
 To remove all experiments, run the following command:
 
