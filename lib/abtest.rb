@@ -34,7 +34,7 @@ module Abtest
       end
 
       # Monkey patch class in-place with sass_config accessor
-      experiment_environment.context_class.extend(Sass::Rails::Railtie::SassContext)
+      experiment_environment.context_class.extend(::Sass::Rails::Railtie::SassContext)
 
       # Always calculate digests and compile files
       app.config.assets.digest      = true

@@ -11,7 +11,7 @@ module Abtest
 
     def define
       namespace :abtest do
-        desc "Compile all the assets named in config.assets.precompile"
+        desc "Compile application.css and application.js in our experiment directories as well as anything called out in config.abtest.precompile_assets."
         task :precompile => :environment do
           configured_experiments = app.config.abtest.registered_tests
 
@@ -22,6 +22,8 @@ module Abtest
 
             # Add our experiments asset path
             assets << lambda {|filename, path| path =~ /#{name}\/assets/ && !%w(.js .css).include?(File.extname(filename))}
+            assets << lambda {|filename, path| path =~ /#{name}\/assets/ && %w(application.js application.css).include?(filename)}
+            assets << lambda {|filename, path| path =~ /#{name}\/assets/ && app.config.abtest.precompile_assets.include?(filename)}
 
             with_logger do
               manifest.compile(assets)
