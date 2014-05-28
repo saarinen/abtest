@@ -1,2 +1,2 @@
 # Add Root for locating experimental assets
-Rails.application.config.assets.paths << "<%= test_root %>"
+Rails.application.config.assets.paths << File.join(Rails.root, 'abtest')
