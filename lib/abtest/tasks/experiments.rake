@@ -2,7 +2,11 @@ namespace :abtest do
   desc "Create a new experiment scaffold. Experiment name is a required arg. (rake abtest:add_experiment[name])"
   task :add_experiment, [:name] => :environment do |t, args|
     name = args[:name]
-    puts "Experiment name is required" and return if name.nil?
+
+    if (name.nil? || name.blank?)
+      puts "Experiment name is required.  Usage: rake abtest:add_experiment[name]"
+      next
+    end
 
     # Add directories for views and assets
     app_config            = Rails.application.config
@@ -19,16 +23,16 @@ namespace :abtest do
     FileUtils.mkdir_p(javascript_path)
 
     # Create a new initializer file if it doesn't exist already
-    initializer_path = "#{Rails.root}/config/initializers/abtest.rb"
+    initializer_path = File.join(Rails.root, 'config', 'initializers', 'abtest.rb')
     unless File.exists?(initializer_path)
-      ab_template = File.read("#{File.dirname(__FILE__)}/templates/abtest.erb")
+      ab_template = File.read(File.join(File.dirname(__FILE__), 'templates', 'abtest.erb'))
       renderer    = ERB.new(ab_template)
       result      = renderer.result(binding)
       File.open(initializer_path, 'w') {|f| f.write(result) }
     end
 
     # Add template initializer
-    template = File.read("#{File.dirname(__FILE__)}/templates/initializer.erb")
+    template = File.read(File.join(File.dirname(__FILE__), 'templates', 'initializer.erb'))
     renderer = ERB.new(template)
     result = renderer.result(binding)
 
@@ -41,10 +45,10 @@ namespace :abtest do
   desc "Delete all experiments"
   task :delete_experiments => :environment do
     # Remove experiments directory
-    FileUtils.rm_rf("#{Rails.root}/abtest")
+    FileUtils.rm_rf(File.join(Rails.root, 'abtest'))
 
     # Remove initializer
-    FileUtils.rm_f("#{Rails.root}/config/initializers/abtest.rb")
+    FileUtils.rm_f(File.join(Rails.root, 'config', 'initializers', 'abtest.rb'))
 
     puts "All tests removed"
   end

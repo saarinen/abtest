@@ -33,6 +33,9 @@ module Abtest
         end
       end
 
+      # Monkey patch class in-place with sass_config accessor
+      experiment_environment.context_class.extend(Sass::Rails::Railtie::SassContext)
+
       # Always calculate digests and compile files
       app.config.assets.digest      = true
       app.config.assets.compile     = true
@@ -61,6 +64,7 @@ module Abtest
       experiment_environment.context_class.assets_prefix  = "#{app.config.assets.prefix}/experiments/#{name}"
       experiment_environment.context_class.digest_assets  = app.config.assets.digest
       experiment_environment.context_class.config         = app.config.action_controller
+      experiment_environment.context_class.sass_config    = app.config.sass
 
       manifests[name] = Sprockets::Manifest.new(experiment_environment, output_file)
     end

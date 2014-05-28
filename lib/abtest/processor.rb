@@ -19,14 +19,12 @@ module Abtest
             I18n.reload!
           end
 
-          # Set view context for asset path
-          environment.context_class.assets_prefix = File.join(app_config.assets.prefix, 'experiments', experiment_name)
-          ActionView::Base.assets_prefix = File.join(app_config.assets.prefix, 'experiments', experiment_name)
-
           manifest = Abtest::ManifestManager.instance.retrieve_manifest(experiment_name)
 
-          ActionView::Base.assets_environment = manifest.environment
-          ActionView::Base.assets_manifest    = manifest
+          # Set view context for asset path
+          controller.view_context_class.assets_prefix       = File.join(app_config.assets.prefix, 'experiments', experiment_name)
+          controller.view_context_class.assets_environment  = manifest.environment
+          controller.view_context_class.assets_manifest     = manifest
 
           # Prepend the lookup paths for our views
           controller.prepend_view_path(File.join(experiment_path, 'views'))
@@ -37,18 +35,6 @@ module Abtest
         elsif (!experiment_activated)
           # ensure experimental translations are removed
           I18n.reload! if I18n.load_path.reject! { |path| path.include?(experiment_name) }
-
-          environment.context_class.assets_prefix = File.join(app_config.assets.prefix)
-          ActionView::Base.assets_prefix = File.join(app_config.assets.prefix)
-
-          manifest_path = File.join(Rails.root, 'public', app_config.assets.prefix)
-
-          if app_config.assets.compile
-            ActionView::Base.assets_environment = environment
-            ActionView::Base.assets_manifest    = Sprockets::Manifest.new(environment, manifest_path)
-          else
-            ActionView::Base.assets_manifest = Sprockets::Manifest.new(manifest_path)
-          end
         end
       end
     end
