@@ -24,7 +24,7 @@ module Abtest
       experiment_path       = File.join(app.root, 'abtest', 'experiments', name)
       application_css_path  = File.join(experiment_path, app.config.assets.prefix, 'stylesheets')
       images_path           = File.join(experiment_path, app.config.assets.prefix, 'images')
-      javascript_path       = File.join(experiment_path, app.config.assets.prefix, 'javascript')
+      javascript_path       = File.join(experiment_path, app.config.assets.prefix, 'javascripts')
 
       # Create a custom sprockets environment
       experiment_environment = Sprockets::Environment.new(Rails.root.to_s) do |env|

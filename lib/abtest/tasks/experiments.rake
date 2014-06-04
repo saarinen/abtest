@@ -14,7 +14,7 @@ namespace :abtest do
     experiment_path       = File.join(test_root, 'experiments', name)
     application_css_path  = File.join(experiment_path, app_config.assets.prefix, 'stylesheets')
     images_path           = File.join(experiment_path, app_config.assets.prefix, 'images')
-    javascript_path       = File.join(experiment_path, app_config.assets.prefix, 'javascript')
+    javascript_path       = File.join(experiment_path, app_config.assets.prefix, 'javascripts')
     view_path             = File.join(experiment_path, 'views')
 
     FileUtils.mkdir_p(view_path)
