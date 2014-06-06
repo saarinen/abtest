@@ -13,6 +13,11 @@ module Abtest
       namespace :abtest do
         desc "Compile application.css and application.js in our experiment directories as well as anything called out in config.abtest.precompile_assets."
         task :precompile => :environment do
+          # Remove the abtest root for this task
+          Rails.application.config.assets.paths = Rails.application.config.assets.paths.reject { |path|
+            path==File.join(Rails.root, 'abtest')
+          }
+
           configured_experiments = app.config.abtest.registered_tests
 
           # Precompile assets for each experiment
