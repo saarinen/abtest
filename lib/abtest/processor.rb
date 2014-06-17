@@ -37,6 +37,16 @@ module Abtest
           I18n.reload! if I18n.load_path.reject! { |path| path.include?(experiment_name) }
         end
       end
+
+      unless experiment_activated
+        # Use default manifest
+        manifest = Abtest::ManifestManager.instance.retrieve_manifest('default')
+
+        # Set view context for asset path
+        controller.view_context_class.assets_prefix       = File.join(Rails.application.config.assets.prefix)
+        controller.view_context_class.assets_environment  = manifest.environment
+        controller.view_context_class.assets_manifest     = manifest
+      end
     end
   end
 end

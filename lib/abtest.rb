@@ -12,11 +12,53 @@ module Abtest
     attr_accessor :manifests
 
     def initialize
-      @manifests = {}
+      @manifests = {'default' => default_manifest }
     end
 
     def retrieve_manifest name
       manifests[name] ||= create_manifest(name)
+    end
+
+    def default_manifest
+      app = Rails.application
+
+      # Create a custom sprockets environment
+      default_environment = Sprockets::Environment.new(Rails.root.to_s) do |env|
+        env.context_class.class_eval do
+          include ::Sprockets::Rails::Helper
+        end
+      end
+
+      # Monkey patch class in-place with sass_config accessor
+      default_environment.context_class.extend(::Sass::Rails::Railtie::SassContext)
+
+      # Always calculate digests and compile files
+      app.config.assets.digest      = true
+      app.config.assets.compile     = true
+      default_environment.cache     = :null_store  # Disables the Asset cache
+
+      # Copy config.assets.paths to Sprockets
+      app.config.assets.paths.each do |path|
+        default_environment.append_path path
+      end
+
+      default_environment.js_compressor  = app.config.assets.js_compressor
+      default_environment.css_compressor = app.config.assets.css_compressor
+
+      if app.config.logger
+        default_environment.logger = app.config.logger
+      else
+        default_environment.logger       = Logger.new($stdout)
+        default_environment.logger.level = Logger::INFO
+      end
+
+      output_file                                      = File.join(app.root, 'public', app.config.assets.prefix)
+      default_environment.context_class.assets_prefix  = "#{app.config.assets.prefix}"
+      default_environment.context_class.digest_assets  = app.config.assets.digest
+      default_environment.context_class.config         = app.config.action_controller
+      default_environment.context_class.sass_config    = app.config.sass
+
+      Sprockets::Manifest.new(default_environment, output_file)
     end
 
     def create_manifest name
