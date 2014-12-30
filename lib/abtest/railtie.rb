@@ -23,14 +23,14 @@ module Abtest
       end
 
       module ActionView
-  module Rendering
-    module ClassMethods
-      def view_context
-        view_context_class.new(view_renderer, view_assigns, self)
+        module Rendering
+          module ClassMethods
+            def view_context
+              view_context_class.new(view_renderer, view_assigns, self)
+            end
+          end
+        end
       end
-    end
-  end
-end
     end
   end
 end

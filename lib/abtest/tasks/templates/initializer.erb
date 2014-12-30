@@ -1,25 +1,31 @@
 
-################################################
+##########################################################
 #
-# Begin configuration for <%= name %> experiment
+# Configuration for <%= name %> experiment.
 #
-################################################
+# The <%= name %>_test lambda is used to determine
+# whether or not to activate this experiment.  It
+# is passed the current request.
+#
+# You can optionally add any controller processing
+# that would be acceptable in a before filter by
+# using the <%= name %>_process lambda. The processor
+# is passed a binding of the context within a controller
+# before_filter.
+#
+###########################################################
 
-<%= name %>_test = lambda { |request| 
-  false 
+<%= name %>_test = lambda { |request|
+  false
 }
 
-<%= name %>_process = lambda { |controller| 
-   
+# The processor is passed a binding of the context within a controller
+# before_filter.
+<%= name %>_process = lambda { |controller_context_binding|
+
 }
 
 Abtest.register_test("<%= name %>", <%= name %>_test, <%= name %>_process)
 
 # Add additional files to precompile here
-Rails.application.config.abtest.precompile_assets = []
-
-################################################
-#
-# End configuration for <%= name %> experiment
-#
-################################################
+Rails.application.config.abtest.precompile_assets += []
