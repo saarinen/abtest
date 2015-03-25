@@ -24,7 +24,7 @@ module Sprockets
           # Check to see if we are in an experiment
           if (path.starts_with?("experiments"))
             Abtest.abtest_config.registered_tests.each do |test_hash|
-              if (path.starts_with?("experiments/#{test_hash[:name]}"))
+              if (path.starts_with?("experiments/#{test_hash[:name]}/"))
                 # Strip experiment path
                 experiment_path = path.sub("experiments/#{test_hash[:name]}/", '')
 
