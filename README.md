@@ -34,6 +34,18 @@ To remove all experiments, run the following command:
 
     $ bundle exec rake abtest:delete_experiments
 
+Those commands will place a stub configuration with instructions in:
+
+    config/initializers/abtest/<experiment_name>.rb
+
+Once you've generated an experiment and configured when it should take effect, you can place your experiment files to overlay on rails in:
+
+    abtest/experiments/<experiment_name>/
+
+So for example:
+
+    abtest/experiments/my_cool_experiment/views/some_controller/foo.html.erb
+
 ## Contributing
 
 1. Fork it
